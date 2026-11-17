@@ -1,170 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Free Stickman Animation Studio</title>
-<style>
-  *{box-sizing:border-box}
-  body{margin:0;background:#171b24;color:#f4f5f7;font-family:Arial,sans-serif;padding:16px}
-  h1{font-size:21px;margin:0 0 8px}
-  p{color:#c8ced8;font-size:14px;line-height:1.45}
-  .wrap{max-width:520px;margin:auto}
-  canvas{display:block;width:min(100%,360px);height:auto;aspect-ratio:9/16;margin:14px auto;background:#d9c9ef;border:2px solid #fff;border-radius:12px}
-  .controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:360px;margin:12px auto}
-  button{border:0;border-radius:10px;padding:13px 9px;font-size:14px;font-weight:700;background:#f2c94c;color:#202020}
-  button.primary{background:#4ade80}
-  button:active{transform:scale(.98)}
-  #status{text-align:center;font-size:13px;color:#d7e2f2;min-height:20px}
-  .note{max-width:360px;margin:10px auto}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>When the WiFi Dies – Stickman Comedy Short</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f0f0f;
+      color: #e5e5e5;
+      line-height: 1.6;
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #facc15;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: #a3a3a3;
+      margin-bottom: 32px;
+      font-size: 0.95rem;
+    }
+    .section {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .section h2 {
+      color: #facc15;
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 8px;
+    }
+    .character-lock {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      font-size: 0.95rem;
+    }
+    .character-lock div {
+      background: #262626;
+      padding: 10px 14px;
+      border-radius: 8px;
+    }
+    .character-lock strong {
+      color: #facc15;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+    }
+    .meta span {
+      background: #262626;
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+    .scene {
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed #333;
+    }
+    .scene:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .scene-title {
+      color: #60a5fa;
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 1.05rem;
+    }
+    .direction {
+      color: #a3a3a3;
+      font-style: italic;
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+    }
+    .dialogue {
+      background: #262626;
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin: 12px 0;
+      border-left: 4px solid #facc15;
+    }
+    .dialogue .line {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .dialogue .tags {
+      font-size: 0.85rem;
+      color: #a3a3a3;
+    }
+    .tags span {
+      display: inline-block;
+      background: #333;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 6px;
+      margin-top: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #262626;
+      color: #facc15;
+    }
+    tr:nth-child(even) {
+      background: #1f1f1f;
+    }
+    .sfx-list {
+      list-style: none;
+    }
+    .sfx-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .sfx-list li:last-child {
+      border-bottom: none;
+    }
+    .end-card {
+      text-align: center;
+      padding: 20px;
+      background: #1e1e1e;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+    .end-card strong {
+      color: #facc15;
+      font-size: 1.2rem;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #666;
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Stickman Animation Studio</h1>
-  <p>Free 2D cartoon maker · 9:16 · 3 scenes · 8 seconds each</p>
-  <canvas id="stage" width="720" height="1280"></canvas>
-  <div class="controls">
-    <button onclick="playScene(0)">Scene 1 · Mosquito</button>
-    <button onclick="playScene(1)">Scene 2 · Slipper</button>
-    <button onclick="playScene(2)">Scene 3 · Army</button>
-    <button class="primary" onclick="playAll()">▶ Play all (24s)</button>
-    <button class="primary" style="grid-column:1/-1" onclick="recordAll()">● Record & save video</button>
+
+  <h1>When the WiFi Dies</h1>
+  <p class="subtitle">Stickman Comedy Short • Ready for GitHub Animation Studio</p>
+
+  <!-- Character Lock -->
+  <div class="section">
+    <h2>🔒 Character Lock (Never Change)</h2>
+    <div class="character-lock">
+      <div><strong>Head:</strong> White round head</div>
+      <div><strong>Hat:</strong> Yellow beanie + pom-pom</div>
+      <div><strong>Eyes:</strong> Big black eyes with white highlights</div>
+      <div><strong>Body:</strong> Thin black stick body</div>
+      <div><strong>Shoes:</strong> Red sneakers with white soles</div>
+      <div><strong>Style:</strong> Consistent in every single frame</div>
+    </div>
   </div>
-  <div id="status">Choose a scene or tap “Play all”.</div>
-  <p class="note">Recording saves a WebM video if your browser supports canvas recording. You can add voice, sound effects and music later in a video editor.</p>
-</div>
-<script>
-const canvas=document.getElementById('stage'),ctx=canvas.getContext('2d');
-const W=720,H=1280;
-let scene=0,start=performance.now(),running=true,allMode=false;
-const statusEl=document.getElementById('status');
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function line(x1,y1,x2,y2,w=10,color='#151515'){
-  ctx.strokeStyle=color;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-}
-function text(t,x,y,size=34,color='#151515',weight='bold'){
-  ctx.fillStyle=color;ctx.font=`${weight} ${size}px Arial`;ctx.textAlign='center';ctx.fillText(t,x,y);
-}
-function bedroom(){
-  ctx.fillStyle='#d9c9ef';ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#c5aee4';ctx.fillRect(0,930,W,350);
-  ctx.fillStyle='#20365d';ctx.fillRect(490,130,170,240);
-  ctx.strokeStyle='#fff';ctx.lineWidth=12;ctx.strokeRect(490,130,170,240);
-  line(575,136,575,365,7,'#fff');line(496,250,654,250,7,'#fff');
-  ctx.fillStyle='#263b67';ctx.fillRect(500,145,150,210);
-  for(let i=0;i<8;i++){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(520+(i*37)%120,165+(i*53)%165,3,0,Math.PI*2);ctx.fill()}
-  ctx.fillStyle='#8a5b3d';ctx.fillRect(75,890,570,35);
-  ctx.fillStyle='#a8754f';ctx.fillRect(95,915,28,190);ctx.fillRect(595,915,28,190);
-  ctx.fillStyle='#f0e8f8';ctx.fillRect(100,820,520,100);
-  ctx.fillStyle='#8b633f';ctx.fillRect(565,755,110,130);
-  ctx.fillStyle='#f5d66b';ctx.beginPath();ctx.arc(620,735,38,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff4c4';ctx.beginPath();ctx.arc(620,735,23,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#8b633f';ctx.fillRect(580,770,80,18);
-}
-function mosquito(x,y,s=1){
-  ctx.save();ctx.translate(x,y);ctx.scale(s,s);
-  ctx.strokeStyle='#252525';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(-8,-18,17,8,-.5,0,Math.PI*2);ctx.ellipse(12,-18,17,8,.5,0,Math.PI*2);ctx.stroke();
-  ctx.fillStyle='#303030';ctx.beginPath();ctx.ellipse(0,0,15,10,0,0,Math.PI*2);ctx.fill();
-  line(10,0,33,-5,3);line(-4,7,-15,23,3);line(3,8,12,24,3);
-  ctx.restore();
-}
-function stickman(x,y,pose='lie',blanket=true){
-  // Body and legs
-  if(pose==='lie'){
-    line(x-30,y+15,x+130,y+15,11);
-    line(x+95,y+15,x+155,y+42,9);line(x+155,y+42,x+175,y+42,9);
-    line(x+10,y+15,x-35,y+48,9);line(x-35,y+48,x-55,y+48,9);
-    line(x+25,y+10,x-10,y-28,8);line(x+25,y+10,x+70,y-25,8);
-  }else{
-    line(x,y+60,x,y+190,12);
-    line(x,y+95,x-55,y+150,9);line(x,y+95,x+55,y+145,9);
-    line(x,y+190,x-35,y+270,10);line(x-35,y+270,x-65,y+270,13,'#d83b42');
-    line(x,y+190,x+38,y+270,10);line(x+38,y+270,x+70,y+270,13,'#d83b42');
-  }
-  // Head
-  ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=10;
-  ctx.beginPath();ctx.arc(x,y-55,58,0,Math.PI*2);ctx.fill();ctx.stroke();
-  // Eyes
-  ctx.fillStyle='#111';
-  if(scene===0 && pose==='lie'){ctx.beginPath();ctx.arc(x-20,y-55,5,0,7);ctx.arc(x+20,y-55,5,0,7);ctx.fill()}
-  else {ctx.beginPath();ctx.arc(x-20,y-62,6,0,7);ctx.arc(x+20,y-62,6,0,7);ctx.fill()}
-  // Yellow beanie with pom-pom
-  ctx.fillStyle='#f5cf38';ctx.strokeStyle='#111';ctx.lineWidth=8;
-  ctx.beginPath();ctx.arc(x,y-85,54,Math.PI,Math.PI*2);ctx.lineTo(x+52,y-82);ctx.lineTo(x-52,y-82);ctx.closePath();ctx.fill();ctx.stroke();
-  ctx.beginPath();ctx.arc(x,y-145,13,0,Math.PI*2);ctx.fill();ctx.stroke();
-  if(blanket){
-    ctx.fillStyle='#4c9b63';ctx.strokeStyle='#172b1d';ctx.lineWidth=9;
-    ctx.beginPath();ctx.roundRect(x-95,y-5,300,190,25);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y-55,58,0,Math.PI*2);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#111';ctx.beginPath();ctx.arc(x-20,y-62,5,0,7);ctx.arc(x+20,y-62,5,0,7);ctx.fill();
-    ctx.fillStyle='#f5cf38';ctx.beginPath();ctx.arc(x,y-85,54,Math.PI,Math.PI*2);ctx.lineTo(x+52,y-82);ctx.lineTo(x-52,y-82);ctx.closePath();ctx.fill();ctx.stroke();
-    ctx.beginPath();ctx.arc(x,y-145,13,0,Math.PI*2);ctx.fill();ctx.stroke();
-  }
-}
-function draw(t){
-  bedroom();
-  const sec=t/1000;
-  if(scene===0){
-    stickman(260,900,'lie',true);
-    let mx=sec<3?690-sec*130:300, my=sec<3?450+sec*110:830;
-    mosquito(mx,my,1.25);
-    if(sec>3.1){text('😳',380,735,42);text('Not tonight, buddy.',360,600,34,'#222')}
-    text('bzzz...',mx,my-55,27,'#333','normal');
-  }else if(scene===1){
-    stickman(350,460,'sit',false);
-    const swing=sec>2&&sec<5;
-    // slipper in hand / flying past
-    ctx.save();ctx.translate(swing?350+Math.sin(sec*5)*100:500, swing?720+Math.sin(sec*8)*80:760);ctx.rotate(swing?sec*2:0);
-    ctx.fillStyle='#d83b42';ctx.strokeStyle='#171717';ctx.lineWidth=8;
-    ctx.beginPath();ctx.roundRect(-18,-65,105,145,35);ctx.fill();ctx.stroke();ctx.restore();
-    mosquito(570-(sec*35)%180,390,1.15);
-    if(sec>5){text('SMACK!',360,310,68,'#c52b35');text('Ouch! Who did that?!',360,390,34)}
-  }else{
-    stickman(270,900,'lie',true);
-    for(let i=0;i<9;i++)mosquito(470+(i%3)*65,260+Math.floor(i/3)*90,0.85);
-    mosquito(420,390,1.1);
-    if(sec>4){text('Okay... you win.',350,700,38)}
-    // blanket raised effect
-    ctx.fillStyle='#4c9b63';ctx.strokeStyle='#172b1d';ctx.lineWidth=9;
-    ctx.beginPath();ctx.roundRect(170,820,380,190,35);ctx.fill();ctx.stroke();
-  }
-}
-function tick(now){
-  if(running){
-    let elapsed=now-start;
-    if(allMode && elapsed>=24000){running=false;statusEl.textContent='Finished. Tap Record & save video to export.';return}
-    if(allMode)scene=Math.min(2,Math.floor(elapsed/8000));
-    else if(elapsed>=8000){running=false;statusEl.textContent='Scene finished.';return}
-    draw(elapsed%8000);
-  }
-  requestAnimationFrame(tick);
-}
-function playScene(n){scene=n;allMode=false;running=true;start=performance.now();statusEl.textContent='Playing scene '+(n+1)+'…';requestAnimationFrame(tick)}
-function playAll(){scene=0;allMode=true;running=true;start=performance.now();statusEl.textContent='Playing all 3 scenes…';requestAnimationFrame(tick)}
-async function recordAll(){
-  if(!canvas.captureStream || !window.MediaRecorder){statusEl.textContent='This browser does not support direct recording. Use screen recorder instead.';return}
-  const stream=canvas.captureStream(30), chunks=[];
-  let mime='video/webm;codecs=vp9';
-  if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';
-  let recorder;
-  try{recorder=new MediaRecorder(stream,{mimeType:mime})}catch(e){statusEl.textContent='Recording is not supported in this browser. Use screen recorder.';return}
-  recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-  recorder.onstop=()=>{
-    const blob=new Blob(chunks,{type:recorder.mimeType||'video/webm'});
-    const url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download='stickman-mosquito-comedy.webm';a.click();
-    setTimeout(()=>URL.revokeObjectURL(url),3000);
-    statusEl.textContent='Video saved. If needed, convert WebM to MP4 in your editor.';
-    stream.getTracks().forEach(track=>track.stop());
-  };
-  scene=0;allMode=true;running=true;start=performance.now();
-  recorder.start();
-  statusEl.textContent='Recording 24 seconds… keep this page open.';
-  requestAnimationFrame(tick);
-  setTimeout(()=>{if(recorder.state==='recording')recorder.stop()},24000);
-}
-draw(0);
-</script>
+
+  <!-- Project Meta -->
+  <div class="section">
+    <h2>📋 Project Settings</h2>
+    <div class="meta">
+      <span>Voice: Funny American Male</span>
+      <span>Format: 9:16 Vertical</span>
+      <span>Duration: 28–35 seconds</span>
+      <span>Style: Stickman Comedy</span>
+      <span>Lip Sync: Yes</span>
+      <span>Facial Expressions: Full</span>
+    </div>
+  </div>
+
+  <!-- Full Script -->
+  <div class="section">
+    <h2>🎬 Full Script with Directions</h2>
+
+    <!-- Scene 1 -->
+    <div class="scene">
+      <div class="scene-title">Scene 1 – Gaming Setup</div>
+      <div class="direction">Stickman is sitting, leaning forward, holding a controller. Focused expression.</div>
+
+      <div class="dialogue">
+        <div class="line">“Almost… almost got the win—”</div>
+        <div class="tags">
+          <span>Emotion: Focused</span>
+          <span>Eyes: Normal</span>
+          <span>Eyebrows: Straight</span>
+          <span>Mouth: Slightly open</span>
+          <span>Body: Leaning forward</span>
+        </div>
+      </div>
+
+      <div class="direction">Sudden freeze. Screen shows “No Internet Connection”. Eyes become huge.</div>
+
+      <div class="dialogue">
+        <div class="line">“NOOOOO!”</div>
+        <div class="tags">
+          <span>Emotion: Extreme Shock</span>
+          <span>Eyes: Very Big</span>
+          <span>Eyebrows: Raised High</span>
+          <span>Mouth: Wide Open</span>
+          <span>Body: Jumps up, both arms raised</span>
+        </div>
+      </div>
+
+      <div class="dialogue">
+        <div class="line">“Not now! Not when I’m one kill away!”</div>
+        <div class="tags">
+          <span>Emotion: Angry</span>
+          <span>Eyes: Narrowed</span>
+          <span>Eyebrows: Angled Down</span>
+          <span>Mouth: Open / Shouting</span>
+          <span>Body: Tense, fists clenched</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 2 -->
+    <div class="scene">
+      <div class="scene-title">Scene 2 – Facing the Router</div>
+      <div class="direction">Stickman walks aggressively toward the router and points at it.</div>
+
+      <div class="dialogue">
+        <div class="line">“I pay you every month… and this is how you treat me?”</div>
+        <div class="tags">
+          <span>Emotion: Angry + Betrayal</span>
+          <span>Eyes: Narrow</span>
+          <span>Eyebrows: Deep Angry</span>
+          <span>Mouth: Speaking firmly</span>
+          <span>Body: Pointing finger at router</span>
+        </div>
+      </div>
+
+      <div class="direction">WiFi suddenly comes back. Stickman freezes for 1 second. Then slowly turns to camera.</div>
+
+      <div class="dialogue">
+        <div class="line">“…Okay fine. You’re forgiven. For now.”</div>
+        <div class="tags">
+          <span>Emotion: Relief → Funny</span>
+          <span>Eyes: Soften</span>
+          <span>Eyebrows: Relaxed</span>
+          <span>Mouth: Big smile + tongue out</span>
+          <span>Body: Turns to camera, small wave, sits back</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expression Table -->
+  <div class="section">
+    <h2>🎭 Expression & Gesture Reference</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Line</th>
+          <th>Emotion</th>
+          <th>Eyes</th>
+          <th>Eyebrows</th>
+          <th>Mouth</th>
+          <th>Body / Hands</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>“Almost… almost got the win—”</td>
+          <td>Focused</td>
+          <td>Normal</td>
+          <td>Straight</td>
+          <td>Slightly open</td>
+          <td>Leaning forward, controller</td>
+        </tr>
+        <tr>
+          <td>“NOOOOO!”</td>
+          <td>Extreme Shock</td>
+          <td>Very Big</td>
+          <td>Raised High</td>
+          <td>Wide Open</td>
+          <td>Jumps up, arms raised</td>
+        </tr>
+        <tr>
+          <td>“Not now! Not when I’m one kill away!”</td>
+          <td>Angry</td>
+          <td>Narrowed</td>
+          <td>Angled Down</td>
+          <td>Shouting</td>
+          <td>Tense body, fists</td>
+        </tr>
+        <tr>
+          <td>“I pay you every month…”</td>
+          <td>Angry + Betrayal</td>
+          <td>Narrow</td>
+          <td>Deep Angry</td>
+          <td>Firm</td>
+          <td>Pointing finger</td>
+        </tr>
+        <tr>
+          <td>“…Okay fine. You’re forgiven. For now.”</td>
+          <td>Relief + Funny</td>
+          <td>Soften</td>
+          <td>Relaxed</td>
+          <td>Big smile + tongue</td>
+          <td>Wave + sit down</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Sound Effects -->
+  <div class="section">
+    <h2>🔊 Suggested Sound Effects</h2>
+    <ul class="sfx-list">
+      <li>Soft gaming background ambience (Scene 1)</li>
+      <li>Sudden disconnect / error beep when WiFi dies</li>
+      <li>Dramatic “whoosh” under “NOOOOO!”</li>
+      <li>Angry stomp / impact sound when he stands up</li>
+      <li>Soft “WiFi connected” chime</li>
+      <li>Light comedic “boing” or chuckle on final smile</li>
+    </ul>
+  </div>
+
+  <!-- End Card -->
+  <div class="section">
+    <h2>🏁 End Card (2–3 seconds)</h2>
+    <div class="end-card">
+      <strong>When WiFi chooses violence</strong><br />
+      <span style="color:#a3a3a3; font-size:0.95rem;">+ Stickman small wave</span>
+    </div>
+  </div>
+
+  <footer>
+    Ready for GitHub Animation Studio • Character consistency locked • Lip Sync + Full Facial Expressions
+  </footer>
+
 </body>
 </html>
